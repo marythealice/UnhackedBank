@@ -1,0 +1,15 @@
+C:\Users\malic\jumpstart\UnhackedBank\bin\Debug\net9.0\UnhackedBank.exe
+C:\Users\malic\jumpstart\UnhackedBank\bin\Debug\net9.0\UnhackedBank.deps.json
+C:\Users\malic\jumpstart\UnhackedBank\bin\Debug\net9.0\UnhackedBank.runtimeconfig.json
+C:\Users\malic\jumpstart\UnhackedBank\bin\Debug\net9.0\UnhackedBank.dll
+C:\Users\malic\jumpstart\UnhackedBank\bin\Debug\net9.0\UnhackedBank.pdb
+C:\Users\malic\jumpstart\UnhackedBank\obj\Debug\net9.0\UnhackedBank.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\malic\jumpstart\UnhackedBank\obj\Debug\net9.0\UnhackedBank.AssemblyInfoInputs.cache
+C:\Users\malic\jumpstart\UnhackedBank\obj\Debug\net9.0\UnhackedBank.AssemblyInfo.cs
+C:\Users\malic\jumpstart\UnhackedBank\obj\Debug\net9.0\UnhackedBank.csproj.CoreCompileInputs.cache
+C:\Users\malic\jumpstart\UnhackedBank\obj\Debug\net9.0\UnhackedBank.sourcelink.json
+C:\Users\malic\jumpstart\UnhackedBank\obj\Debug\net9.0\UnhackedBank.dll
+C:\Users\malic\jumpstart\UnhackedBank\obj\Debug\net9.0\refint\UnhackedBank.dll
+C:\Users\malic\jumpstart\UnhackedBank\obj\Debug\net9.0\UnhackedBank.pdb
+C:\Users\malic\jumpstart\UnhackedBank\obj\Debug\net9.0\UnhackedBank.genruntimeconfig.cache
+C:\Users\malic\jumpstart\UnhackedBank\obj\Debug\net9.0\ref\UnhackedBank.dll
