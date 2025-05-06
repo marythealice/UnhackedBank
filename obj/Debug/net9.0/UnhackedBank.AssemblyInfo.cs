@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("UnhackedBank")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5e2fdf8b3c166f3c98eddc068bf66e41407d409a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d359648955c1ddb654e9489ca1392417cc5c359c")]
 [assembly: System.Reflection.AssemblyProductAttribute("UnhackedBank")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UnhackedBank")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

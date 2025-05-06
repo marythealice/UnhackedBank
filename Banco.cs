@@ -1,76 +1,94 @@
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices;
+
 namespace UnhackedBank;
+
 public class Banco
 {
-    private List<Conta> _contas = new List<Conta>(100);
-    private const int NumContaMaxima = 10;
-    public const string NumeroAgencia = "0001";
+    private HashSet<Agencia> _agencias = new HashSet<Agencia>(100);
+    private uint NumeroDeAgencias = 0;
 
-    public uint NumeroConta = 0;
+    private const uint NumeroMaximoAgencias = 10;
 
-
-
-    public Conta CriarConta(Cliente cliente)
+    public Agencia? CriarAgencia()
     {
-        foreach (Conta contaIgual in _contas)
+        ++NumeroDeAgencias;
+        string numeroAgencia = NumeroDeAgencias.ToString();
+        Agencia agenciaUB = new Agencia(numeroAgencia);
+        if (_agencias.Count < NumeroMaximoAgencias)
         {
-            if (contaIgual.Cliente.Documento == cliente.Documento)
-            {
-                return null;
-            }
-        }
-        Conta conta = new Conta(NumeroAgencia, ++NumeroConta, cliente);
-        return conta;
-    }
-    public bool AdicionarConta(Conta conta)
-    {
-        if (_contas.Count < NumContaMaxima)
-        {
-            _contas.Add(conta);
-            return true;
-        }
-        return false;
-    }
-    public Conta ObterConta(string documento)
-    {
-        foreach (Conta conta in _contas)
-        {
-            if (conta.Cliente.Documento == documento)
-            {
-                return conta;
-            }
-        }
-        return null;
-    }
-    public Cliente ObterCliente(string documento)
-    {
-        var conta = ObterConta(documento);
-        if (conta is not null)
-        {
-            return conta.Cliente;
+            _agencias.Add(agenciaUB);
+            return agenciaUB;
         }
         return null;
     }
 
-    public decimal EncerrarConta(string documento)
+    public Agencia? CriarNovaAgencia()
     {
-        var conta = ObterConta(documento);
-        if (conta is not null)
+        var agenciaComCapacidade = _agencias.FirstOrDefault(a => a.TemCapacidade());
+        if (agenciaComCapacidade is null)
         {
-            var saldoRestante = conta.Saldo;
-            if (saldoRestante == 0)
-            {
-                return 0;
-            }
-            else if (saldoRestante > 0)
-            {
-                conta.Sacar(saldoRestante);
-                return saldoRestante;
-            }
-
+            var novaAgencia = CriarAgencia();
+            return novaAgencia;
         }
+        return agenciaComCapacidade;
+    }
+
+    public decimal ObterSaldoAgencia(string numeroAgencia)
+    {
+        var agencia = _agencias.FirstOrDefault(a => a.NumeroAgencia == numeroAgencia);
+        if (agencia is not null)
+            return agencia.ObterSaldoPorAgencia();
+
         return -1;
     }
 
+    public Agencia? ObterAgencia(string numeroAgencia)
+    {
+        return _agencias.FirstOrDefault(a => a.NumeroAgencia == numeroAgencia);
+    }
+
+    public decimal ObterSaldoTotalBanco()
+    {
+        return _agencias.Sum(a => a.ObterSaldoPorAgencia());
+    }
+
+    public Conta? MigrarConta(string numeroConta, string numeroAgencia, string numeroNovaAgencia, Banco banco)
+    {
+        var agencia = _agencias.FirstOrDefault(a => a.NumeroAgencia == numeroAgencia);
+        if (agencia is null)
+            throw new InvalidOperationException("Agencia de origem não encontrada.");
+
+        var agenciaNova = _agencias.FirstOrDefault(a => a.NumeroAgencia == numeroNovaAgencia);
+        if (agenciaNova is null)
+            throw new InvalidOperationException("Agencia de destino não encontrada. ");
+
+        var agenciaNovaTemCapacidade = agenciaNova.TemCapacidade();
+        if (!agenciaNovaTemCapacidade)
+        {
+            throw new InvalidOperationException("Não há mais espaço para clientes novos na agencia escolhida. ");
+        }
+
+        var conta = agencia.ObterConta(numeroConta, numeroAgencia);
+        var cliente = agencia.ObterCliente(numeroConta, numeroAgencia);
+
+        if (conta is null)
+            throw new InvalidOperationException("A conta não foi encontrada. ");
+
+        if (cliente is null)
+            throw new InvalidOperationException("O cliente não foi encontrado. ");
 
 
+        decimal saldoRestante = conta.Saldo;
+        agencia.EncerrarConta(numeroConta, numeroAgencia);
+
+
+        var novaConta = agenciaNova.CriarConta(cliente, banco);
+        novaConta?.Depositar(saldoRestante);
+        return novaConta;
+
+    }
 }
+
+
+

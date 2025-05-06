@@ -11,7 +11,8 @@
 */
 using UnhackedBank;
 
-Banco BancoUB = new Banco();
+Banco banco = new Banco();
+var agenciaInicial = banco.CriarAgencia();
 bool sair = false;
 
 do
@@ -23,8 +24,12 @@ do
   Console.WriteLine("5 - Alterar endereco do cliente. ");
   Console.WriteLine("6 - Encontrar cliente. ");
   Console.WriteLine("7 - Encontrar conta. ");
-  Console.WriteLine("8 - Encerrar conta. ");
-  Console.WriteLine("9 - Sair. ");
+  Console.WriteLine("8 - Migrar conta de agência. ");
+  Console.WriteLine("9 - Encerrar conta. ");
+  Console.WriteLine("10 - Listagem de saldo por cliente. ");
+  Console.WriteLine("11 - Listagem de saldo por agência. ");
+  Console.WriteLine("12 - Listagem de saldo por banco ");
+  Console.WriteLine("13 - Sair. ");
   var operacao = Console.ReadLine();
 
   if (operacao == "1")
@@ -37,31 +42,36 @@ do
 
     Cliente cliente = new Cliente(nome, documento, endereco);
 
-    var conta = BancoUB.CriarConta(cliente);
-
-    if (conta is not null)
+    try
     {
-      var foiAdicionado = BancoUB.AdicionarConta(conta);
-      if (foiAdicionado)
+      var conta = agenciaInicial?.CriarConta(cliente, banco);
+
+      if (conta is not null)
       {
         Console.WriteLine("A conta foi adicionada com sucesso");
       }
       else
       {
-        Console.WriteLine("Não pudemos criar a conta - numero maximo de clientes foi atingido. ");
+        Console.WriteLine("Não foi possível criar a conta. Dados do cliente foram invalidos. Redirecionando ao Menu. ");
+        continue;
       }
     }
-    else
+    catch (InvalidOperationException error)
     {
-      Console.WriteLine("Conta ja existe. Redirecionando ao Menu. ");
-      continue;
+      Console.WriteLine($"A conta não pode ser criada. Erro: {error.Message}");
     }
+
+
+
   }
   else if (operacao == "2")
   {
-    Console.WriteLine("Digite seu documento. ");
-    string documento = Console.ReadLine();
-    var conta = BancoUB.ObterConta(documento);
+    Console.WriteLine("Digite o número da conta. ");
+    string numeroConta = Console.ReadLine();
+    Console.WriteLine("Digite o número da agência. ");
+    string numeroAgencia = Console.ReadLine();
+    var agencia = banco.ObterAgencia(numeroAgencia);
+    var conta = agencia.ObterConta(numeroConta, numeroAgencia);
     if (conta is null)
     {
       Console.WriteLine("O documento passado nao pertence a nenhuma conta. ");
@@ -85,9 +95,12 @@ do
 
   else if (operacao == "3")
   {
-    Console.WriteLine("Digite seu documento. ");
-    string documento = Console.ReadLine();
-    var conta = BancoUB.ObterConta(documento);
+    Console.WriteLine("Digite o número da conta. ");
+    string numeroConta = Console.ReadLine();
+    Console.WriteLine("Digite o número da agência. ");
+    string numeroAgencia = Console.ReadLine();
+    var agencia = banco.ObterAgencia(numeroAgencia);
+    var conta = agencia.ObterConta(numeroConta, numeroAgencia);
     if (conta is not null)
     {
       Console.WriteLine("Digite o valor a ser sacado. ");
@@ -107,19 +120,25 @@ do
 
   else if (operacao == "4")
   {
-    Console.WriteLine("Digite o seu documento. ");
-    string documentoContaTitular = Console.ReadLine();
-    var contaTitular = BancoUB.ObterConta(documentoContaTitular);
-    if (contaTitular is null)
+    Console.WriteLine("Digite o número da conta. ");
+    string numeroConta = Console.ReadLine();
+    Console.WriteLine("Digite o número da agência. ");
+    string numeroAgencia = Console.ReadLine();
+    var agencia = banco.ObterAgencia(numeroAgencia);
+    var conta = agencia.ObterConta(numeroConta, numeroAgencia);
+    if (conta is null)
     {
-      Console.WriteLine("O documento passado nao pertence a nenhuma conta. ");
+      Console.WriteLine("A conta referente aos dados passados não existe. ");
       Console.WriteLine("Redirecionando ao Menu. ");
       continue;
     }
 
-    Console.WriteLine("Digite o documento da conta para qual deseja fazer transferencia. ");
-    string documentoContaRecebedora = Console.ReadLine();
-    var contaRecebedora = BancoUB.ObterConta(documentoContaRecebedora);
+    Console.WriteLine("Digite o número da conta a transferir. ");
+    string numeroContaRecebedora = Console.ReadLine();
+    Console.WriteLine("Digite o número da agência. ");
+    string numeroAgenciaRecebedora = Console.ReadLine();
+    var agenciaRecebedora = banco.ObterAgencia(numeroAgenciaRecebedora);
+    var contaRecebedora = agenciaRecebedora.ObterConta(numeroConta, numeroAgencia);
     if (contaRecebedora is null)
     {
       Console.WriteLine("O documento passado nao pertence a nenhuma conta. ");
@@ -128,7 +147,7 @@ do
     }
     Console.WriteLine("Digite o valor a ser transferido. ");
     decimal valortrasnferencia = decimal.Parse(Console.ReadLine());
-    var foiTransferido = contaTitular.Transferir(contaRecebedora, valortrasnferencia);
+    var foiTransferido = conta.Transferir(contaRecebedora, valortrasnferencia);
     if (foiTransferido)
     {
       Console.WriteLine($"Transferencia feita com sucesso. ");
@@ -143,9 +162,12 @@ do
 
   else if (operacao == "5")
   {
-    Console.WriteLine("Digite o documento do cliente do qual deseja mudar o endereco. ");
-    string documento = Console.ReadLine();
-    var cliente = BancoUB.ObterCliente(documento);
+    Console.WriteLine("Digite o número da conta do cliente. ");
+    string numeroConta = Console.ReadLine();
+    Console.WriteLine("Digite o número da agência do cliente. ");
+    string numeroAgencia = Console.ReadLine();
+    var agencia = banco.ObterAgencia(numeroAgencia);
+    var cliente = agencia.ObterCliente(numeroConta, numeroAgencia);
     if (cliente is not null)
     {
       Console.WriteLine("Alterando o endereco. ");
@@ -162,9 +184,12 @@ do
 
   else if (operacao == "6")
   {
-    Console.WriteLine("Digite seu documento. ");
-    string documento = Console.ReadLine();
-    var cliente = BancoUB.ObterCliente(documento);
+    Console.WriteLine("Digite o número da conta. ");
+    string numeroConta = Console.ReadLine();
+    Console.WriteLine("Digite o número da agência. ");
+    string numeroAgencia = Console.ReadLine();
+    var agencia = banco.ObterAgencia(numeroAgencia);
+    var cliente = agencia.ObterCliente(numeroConta, numeroAgencia);
     if (cliente is not null)
     {
       Console.WriteLine($"O cliente encontrado e {cliente}");
@@ -180,16 +205,19 @@ do
 
   else if (operacao == "7")
   {
-    Console.WriteLine("Digite seu documento. ");
-    string documento = Console.ReadLine();
-    var conta = BancoUB.ObterConta(documento);
+    Console.WriteLine("Digite o número da conta. ");
+    string numeroConta = Console.ReadLine();
+    Console.WriteLine("Digite o número da agência. ");
+    string numeroAgencia = Console.ReadLine();
+    var agencia = banco.ObterAgencia(numeroAgencia);
+    var conta = agencia.ObterConta(numeroConta, numeroAgencia);
     if (conta is not null)
     {
-      Console.WriteLine($"A conta encontrada e {conta}");
+      Console.WriteLine($"A conta encontrada foi: Número:{conta}, Agência:{agencia}. ");
     }
     else
     {
-      Console.WriteLine("O cliente nao existe. ");
+      Console.WriteLine("A conta nao existe. ");
       Console.WriteLine("Voltando ao menu. ");
       continue;
     }
@@ -198,15 +226,36 @@ do
 
   else if (operacao == "8")
   {
+    Console.WriteLine("Digite o número da conta a migrar. ");
+    string numeroConta = Console.ReadLine();
+    Console.WriteLine("Digite o número da agência de origem. ");
+    string numeroAgencia = Console.ReadLine();
+    Console.WriteLine("Digite o número da agência para qual deseja migrar. ");
+    string numeroAgenciaNova = Console.ReadLine();
+    try
+    {
+      banco.MigrarConta(numeroConta, numeroAgencia, numeroAgenciaNova, banco);
+    }
+    catch (InvalidOperationException erro)
+    {
+      Console.WriteLine($"Erro no processamento: {erro.Message}");
+    }
+  }
+
+  else if (operacao == "9")
+  {
     Console.WriteLine("Ao remover uma conta, todo o saldo restante será sacado automaticamente. ");
     Console.WriteLine("Se deseja continuar mesmo assim, digite 1. ");
     string continuar = Console.ReadLine();
     if (continuar != "1")
       continue;
 
-    Console.WriteLine("Digite o documento da conta que deseja encerrar. ");
-    string documento = Console.ReadLine();
-    var contaFoiEncerrada = BancoUB.EncerrarConta(documento);
+    Console.WriteLine("Digite o número da conta. ");
+    string numeroConta = Console.ReadLine();
+    Console.WriteLine("Digite o número da agência. ");
+    string numeroAgencia = Console.ReadLine();
+    var agencia = banco.ObterAgencia(numeroAgencia);
+    var contaFoiEncerrada = agencia.EncerrarConta(numeroConta, numeroAgencia);
     if (contaFoiEncerrada == -1)
     {
       Console.WriteLine("A conta nao existe. ");
@@ -223,7 +272,47 @@ do
     }
   }
 
-  else if (operacao == "9")
+  else if (operacao == "10")
+  {
+    Console.WriteLine("Digite o número da conta. ");
+    string numeroConta = Console.ReadLine();
+    Console.WriteLine("Digite o número da agência. ");
+    string numeroAgencia = Console.ReadLine();
+    var agencia = banco.ObterAgencia(numeroAgencia);
+    var conta = agencia.ObterConta(numeroConta, numeroAgencia);
+    if (conta is not null)
+    {
+      var saldo = conta.ObterSaldo;
+      {
+        Console.WriteLine($"O saldo do cliente é {saldo}. ");
+      }
+    }
+    Console.WriteLine("A conta não existe. Redirecionando ao Menu. ");
+    continue;
+  }
+  else if (operacao == "11")
+  {
+    Console.WriteLine("Digite o número da agencia que deseja saber o saldo total. ");
+    string numeroAgencia = Console.ReadLine();
+    var saldoAgencia = banco.ObterSaldoAgencia(numeroAgencia);
+    if (saldoAgencia > 0)
+    {
+      Console.WriteLine($"O saldo da agencia {numeroAgencia} é {saldoAgencia}");
+    }
+    else if (saldoAgencia == -1)
+    {
+      Console.WriteLine("A agencia não existe. Redirecionando ao Menu. ");
+      continue;
+    }
+  }
+
+  else if (operacao == "12")
+  {
+    var saldoTotal = banco.ObterSaldoTotalBanco();
+    Console.WriteLine($"O saldo total do banco é {saldoTotal}");
+  }
+
+  else if (operacao == "13")
   {
     sair = true;
   }

@@ -1,14 +1,13 @@
 namespace UnhackedBank;
 public class Conta
 {
-    public uint NumeroConta { get; }
+    public string NumeroConta { get; private set; }
     public decimal Saldo { get; private set; }
 
-    public string NumeroAgencia { get; set; }
-    public Cliente Cliente { get; set; }
+    public string NumeroAgencia { get; private set; }
+    public Cliente Cliente { get; private set; }
 
-    // construtor setando valores ao instanciar Conta
-    public Conta(string numeroAgencia, uint numeroConta, Cliente cliente)
+    public Conta(string numeroAgencia, string numeroConta, Cliente cliente)
     {
         NumeroAgencia = numeroAgencia;
         NumeroConta = numeroConta;
@@ -27,7 +26,7 @@ public class Conta
 
     public bool Sacar(decimal valorSaque)
     {
-        if (valorSaque < Saldo)
+        if (valorSaque <= Saldo)
         {
             Saldo -= valorSaque;
             return true;
@@ -42,6 +41,29 @@ public class Conta
             return true;
         }
         return false;
+    }
+
+    public bool ContaPertenceAoCliente(string numeroConta, string numeroAgencia)
+    {
+        return NumeroConta == numeroConta && NumeroAgencia == numeroAgencia;
+    }
+
+    public decimal ObterSaldo()
+    {
+        return Saldo;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not Conta other)
+            return false;
+
+        return NumeroConta == other.NumeroConta && NumeroAgencia == other.NumeroAgencia;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(NumeroConta, NumeroAgencia);
     }
 
     public override string ToString() => $"{NumeroConta}";
